@@ -2,8 +2,8 @@
 
 import React from "react";
 import { Container } from "./container";
-import { ArrowRight, Eye, Heart, MessageCircle, MessageSquare, Undo2 } from "lucide-react";
-import { Tag } from "./postList";
+import { ArrowRight, Eye, Heart, MessageCircle, Undo2 } from "lucide-react";
+import { Tag } from "@/redux/slices/postSlice";
 
 interface Props {
   className?: string;
@@ -13,7 +13,6 @@ interface Props {
   desc: string;
   bannerImage: string;
   tags?: Tag[];
-
   countComments: number;
   countLikes: number;
   countViews: number;
@@ -34,8 +33,10 @@ export const PostCard: React.FC<Props> = ({
   return (
     <Container>
       <div className="w-[720px]  bg-primary rounded-2xl p-5 mb-10">
-        <div className="flex gap-4 mb-5">
-          <img src={avatar} className="w-[40px] h-[40px] rounded-full" />
+        <div className="flex items-center gap-4 mb-5">
+          <div className="w-12 h-12 rounded-full overflow-hidden shrink-0">
+            <img src={avatar} alt="avatar" className="w-full h-full object-cover" />
+          </div>
           <p>{authorName}</p>
         </div>
 

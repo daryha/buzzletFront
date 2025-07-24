@@ -1,48 +1,31 @@
-import axiosInstance, { API_BASE } from "@/lib/axios";
+"use client";
+
 import React from "react";
 import { PostCard } from "./postCard";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/redux/store";
+import { fetchPosts } from "@/redux/slices/postSlice";
 
 interface Props {
   className?: string;
 }
 
-export interface Tag {
-  id: number;
-  name: string;
-}
+export const PostList: React.FC<Props> = ({ className }) => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { items: posts, status } = useSelector((state: RootState) => state.posts);
 
-interface RawPost {
-  id: string;
-  title: string;
-  description: string;
-  bannerImg: string;
-  tags: Tag[];
-  author: {
-    name: string;
-    avatar: string;
-  };
-  _count: {
-    comments: number;
-    likes: number;
-    views: number;
-  };
-}
+  React.useEffect(() => {
+    if (status === "idle") {
+      dispatch(fetchPosts());
+    }
+  }, [status, dispatch]);
 
-export const PostList: React.FC<Props> = async ({ className }) => {
-  const { data: rawPosts } = await axiosInstance.get<RawPost[]>("/post");
-
-  const posts = rawPosts.map((p) => ({
-    id: p.id,
-    authorName: p.author.name,
-    avatarUrl: p.author.avatar ? `${API_BASE}/avatars/${p.author.avatar}` : "/default-avatar.png",
-    title: p.title,
-    desc: p.description,
-    bannerImage: p.bannerImg,
-    countComments: p._count.comments,
-    countLikes: p._count.likes,
-    countViews: p._count.views,
-    tags: p.tags,
-  }));
+  if (status === "loading") {
+    return <div className={className}>Загрузка...</div>;
+  }
+  if (status === "failed") {
+    return <div className={className}>Ошибка загрузки</div>;
+  }
 
   return (
     <div className={className}>

@@ -8,6 +8,7 @@ interface Props {
   className?: string;
   onClick?: () => void;
   disabled?: boolean;
+  type?: "button" | "submit" | "reset";
 }
 
 export const Button: React.FC<Props> = ({
@@ -17,6 +18,7 @@ export const Button: React.FC<Props> = ({
   className = "",
   onClick,
   disabled = false,
+  type,
 }) => {
   const variants = {
     primary: "bg-primary text-[#C9CCCF] hover:bg-primary/90 focus:ring-primary/50",
@@ -34,6 +36,7 @@ export const Button: React.FC<Props> = ({
 
   return (
     <button
+      type={type}
       className={clsx(
         "rounded-2xl transition-colors cursor-pointer",
         variants[variant],
