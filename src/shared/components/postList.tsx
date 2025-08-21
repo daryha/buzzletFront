@@ -15,10 +15,8 @@ export const PostList: React.FC<Props> = ({ className }) => {
   const { items: posts, status } = useSelector((state: RootState) => state.posts);
 
   React.useEffect(() => {
-    if (status === "idle") {
-      dispatch(fetchPosts());
-    }
-  }, [status, dispatch]);
+    dispatch(fetchPosts());
+  }, [dispatch]);
 
   if (status === "loading") {
     return <div className={className}>Загрузка...</div>;
@@ -32,6 +30,7 @@ export const PostList: React.FC<Props> = ({ className }) => {
       {posts.map((post) => (
         <PostCard
           key={post.id}
+          id={post.id}
           authorName={post.authorName}
           avatar={post.avatarUrl}
           title={post.title}
@@ -41,6 +40,7 @@ export const PostList: React.FC<Props> = ({ className }) => {
           countLikes={post.countLikes}
           countViews={post.countViews}
           tags={post.tags}
+          liked={post.liked}
         />
       ))}
     </div>

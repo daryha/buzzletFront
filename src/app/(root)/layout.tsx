@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import { Header } from "@/shared/components/header";
 import { Providers } from "../providers";
+import { NavList } from "@/shared/components/nav-list";
+import { RightSide } from "@/shared/components/right-side";
+import { Container } from "@/shared/components/container";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,8 +34,14 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Providers>
           <Header />
-          {modal}
-          {children}
+          <Container>
+            <div className="grid grid-cols-[auto_1fr_auto] gap-4">
+              <NavList />
+              {modal}
+              {children}
+              <RightSide />
+            </div>
+          </Container>
         </Providers>
       </body>
     </html>

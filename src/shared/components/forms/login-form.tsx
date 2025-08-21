@@ -4,10 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginFormValues, loginSchema } from "@/validation/authSchema";
 import { Input } from "@/shared/ui/Input";
 import { Button } from "@/shared/ui/Button";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@/redux/store";
 import { fetchAuthMe, fetchLogin } from "@/redux/slices/authSlice";
+import { useAppDispatch, useAppSelector } from "@/hooks/useRedux";
+import { resetAllLikes } from "@/redux/slices/postSlice";
+import { ErrorPayload } from "./register-form";
 
 interface Props {
   className?: string;
@@ -15,11 +15,11 @@ interface Props {
 }
 
 export const LoginForm: React.FC<Props> = ({ className, onClose }) => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { status, user } = useSelector((s: RootState) => s.auth);
+  const dispatch = useAppDispatch();
+  const { status, user } = useAppSelector((s) => s.auth);
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { email: "daryha56@gmail.com", password: "553253c6S@!" },
   });
 
   const {
@@ -29,10 +29,22 @@ export const LoginForm: React.FC<Props> = ({ className, onClose }) => {
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      await dispatch(fetchLogin({ email: data.email, password: data.password }));
-      dispatch(fetchAuthMe());
+      const loginResult = await dispatch(
+        fetchLogin({ email: data.email, password: data.password })
+      );
 
-      onClose();
+      if (fetchLogin.fulfilled.match(loginResult)) {
+        dispatch(fetchAuthMe());
+        resetAllLikes();
+        onClose();
+      } else if (fetchLogin.rejected.match(loginResult)) {
+        const errorPayload = loginResult.payload as any;
+        const errorMessage = errorPayload?.message;
+
+        if (errorPayload?.statusCode === 404) {
+          form.setError("email", { type: "server", message: errorMessage });
+        }
+      }
     } catch (err: unknown) {
       alert(`Не удалось войти ошибка - ${err} `);
     }
@@ -45,7 +57,7 @@ export const LoginForm: React.FC<Props> = ({ className, onClose }) => {
         onSubmit={handleSubmit(onSubmit)}
       >
         <Input name="email" placeholder="Почта" className="px-4 py-6" />
-        <Input name="password" placeholder="Пароль" className="px-4 py-6" />
+        <Input name="password" placeholder="Пароль" type="password" className="px-4 py-6" />
 
         <Button type="submit" variant="secondary" disabled={isSubmitting} className="w-[300px]">
           {status === "loading" ? <p>Вход...</p> : <p>Войти</p>}
